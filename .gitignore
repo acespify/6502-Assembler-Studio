@@ -1,0 +1,12 @@
+# Ignore build folder
+build/
+.vscode/
+
+# Object files
+*.o
+*.res
+
+# Ignore *.bin, *.exe, *.ini
+*.exe
+*.bin
+*.ini

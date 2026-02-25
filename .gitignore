@@ -1,0 +1,13 @@
+# Ignore build folder
+build/
+
+
+# Object files
+*.o
+*.res
+
+# Ignore *.bin, *.exe, *.ini
+*.exe
+*.bin
+*.ini
+build_number.txt

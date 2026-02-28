@@ -1,5 +1,6 @@
 # Ignore build folder
 build/
+source/
 
 
 # Object files
@@ -11,3 +12,4 @@ build/
 *.bin
 *.ini
 build_number.txt
+*.s

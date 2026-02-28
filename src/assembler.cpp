@@ -166,7 +166,7 @@ void Assembler::Assemble(const std::string& source) {
 //     and advances the PC accordingly.
 // ============================================================================
 void Assembler::PassOne(const std::vector<Token>& tokens) {
-    uint16_t PC = 0x0000;
+    uint16_t PC = 0x8000;
     symbolTable.clear();
 
     for (size_t i = 0; i < tokens.size(); i++) {
@@ -253,7 +253,7 @@ void Assembler::PassOne(const std::vector<Token>& tokens) {
 //     and throws an error if the destination is too far away (>127 bytes).
 // ============================================================================
 void Assembler::PassTwo(const std::vector<Token>& tokens) {
-    uint16_t PC = 0x0000;
+    uint16_t PC = 0x8000;
     log += "Starting Pass 2...\n";
 
     for (size_t i = 0; i < tokens.size(); i++) {
@@ -347,12 +347,18 @@ void Assembler::PassTwo(const std::vector<Token>& tokens) {
 //   - It dumps the entire `ram` vector into the file in one continuous block.
 //   - It updates the build log to notify the user if the save succeeded or failed.
 // ============================================================================
-void Assembler::SaveBinary(const std::string& filepath) {
+void Assembler::SaveBinary(const std::string& filepath, uint16_t start_address, size_t size) {
     std::ofstream file(filepath, std::ios::binary);
     if (file.is_open()) {
-        file.write(reinterpret_cast<const char*>(ram.data()), ram.size());
+        // Safety Check: Prevent reading past the end of the 64k array
+        if(start_address + size > ram.size()){
+            size = ram.size() - start_address;
+        }
+
+        file.write(reinterpret_cast<const char*>(ram.data() + start_address), size);
         file.close();
-        log += "Saved binary to " + filepath + "\n";
+        log += "Saved " + std::to_string(size) + " bytes starting at $" +
+                std::to_string(start_address) + " to " + filepath + "\n";
     } else {
         log += "Failed to save binary to " + filepath + "\n";
     }

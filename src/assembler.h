@@ -30,7 +30,7 @@ public:
     void Assemble(const std::string& source);
     
     // File output
-    void SaveBinary(const std::string& filepath);
+    void SaveBinary(const std::string& filepath, uint16_t start_address = 0x0000, size_t size = 65536);
     
     // Getters for the ImGui frontend
     const std::vector<uint8_t>& GetBuffer() const { return ram; }

@@ -35,23 +35,31 @@ RELEASE_DIR  := $(BUILD_DIR)/release
 # Phony targets don't represent actual files
 .PHONY: all debug release clean clean-all info copy-libs copy-assets bump_build
 
-# Default target when you just run `make`
-all: release
-
 # ============================================================
 # VERSIONING SYSTEM
 # ============================================================
 
-VERSION        := 0.1.0
+# Defining the base semantic versioning
+VERSION_MAJOR	:= 0
+VERSION_MINOR	:= 1
+
 GIT_HASH       := $(shell git rev-parse --short HEAD 2>/dev/null || echo "nogit")
 BUILD_DATE     := $(shell date +"%Y-%m-%d %H:%M:%S")
 BUILD_FILE     := build_number.txt
 BUILD_NUMBER   := $(shell [ -f $(BUILD_FILE) ] && cat $(BUILD_FILE) || echo 0)
 
+# Calculate the Patch Version (integer division by 100)
+VERSION_PATCH	:= $(shell expr $(BUILD_NUMBER) / 100)
+
+# Combine into standard Semantic Versioning (Major.Minor.Patch)
+VERSION			:= $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+
+# Calculate the next number safely, avoiding Windows shell math bugs
+NEXT_BUILD_NUMBER := $(shell expr $(BUILD_NUMBER) + 1)
 VERSION_HEADER := $(SRC_DIR)/version.h
 
 # Generate version.h if it doesn't exist
-$(VERSION_HEADER):
+$(VERSION_HEADER): $(wildcard .git/HEAD) $(wildcard .git/index) $(BUILD_FILE)
 	@echo "Generating initial version.h..."
 	@echo "#pragma once" > $(VERSION_HEADER)
 	@echo "#define APP_VERSION \"$(VERSION)\"" >> $(VERSION_HEADER)
@@ -61,7 +69,7 @@ $(VERSION_HEADER):
 
 # Run `make bump_build` manually when you want to increment the build number
 bump_build:
-	@echo $$(( $(BUILD_NUMBER) + 1 )) > $(BUILD_FILE)
+	@echo $(NEXT_BUILD_NUMBER) > $(BUILD_FILE)
 	@rm -f $(VERSION_HEADER)
 	@$(MAKE) $(VERSION_HEADER) --no-print-directory
 
@@ -116,8 +124,10 @@ RELEASE_BIN := $(RELEASE_DIR)/$(APP_NAME)$(TARGET_EXT)
 # BUILD TARGETS
 # ============================================================
 
+all: debug				#bump_build $(VERSION_HEADER) $(BUILD_DIR)/$(APP_NAME) copy-assets copy-libs
+
 debug: CXXFLAGS += -g -O0 -DDEBUG
-debug: $(VERSION_HEADER) copy-libs copy-assets $(DEBUG_BIN)
+debug: bump_build $(VERSION_HEADER) copy-libs copy-assets $(DEBUG_BIN)
 	@echo "Debug build complete → $(DEBUG_BIN)"
 
 $(DEBUG_BIN): $(DEBUG_OBJS) $(RES_OBJ_D)
@@ -125,7 +135,7 @@ $(DEBUG_BIN): $(DEBUG_OBJS) $(RES_OBJ_D)
 	$(CXX) $(CXXFLAGS) $(DEBUG_OBJS) $(RES_OBJ_D) -o $@ $(LIBS)
 
 release: CXXFLAGS += -O3 -DNDEBUG
-release: $(VERSION_HEADER) copy-libs copy-assets $(RELEASE_BIN)
+release: bump_build $(VERSION_HEADER) copy-libs copy-assets $(RELEASE_BIN)
 	@echo "Release build complete → $(RELEASE_BIN)"
 
 $(RELEASE_BIN): $(RELEASE_OBJS) $(RES_OBJ_R)

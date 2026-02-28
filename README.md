@@ -88,6 +88,10 @@ To run the program, navigate to the build/release folder and launch the executab
 
 ![Assembler Studio Code](docs/Example%20with%20code%20compilation.png)
 
+![Assembler Studio Code](docs/AdvancedFeature-Text-Highlighing.png)
+
+![Assembler Stufio Code](docs/Edtor-Color-Settings.png)
+
 * 1. **Write or Load Code:** Use the top menu bar (File -> Load) to load an existing .s assembly file, or start typing directly into the **Source Editor** pane.
 
 * 2. **Set the Output Location:** In the bottom right pane, click Browse next to the "Output ROM" text box to choose exactly where you want your compiled .bin file to be saved.
@@ -117,4 +121,4 @@ For those interested in exploring the source code, here is a quick guide to how 
 ---
 
 ### Learning Journey
-Building this tool was a deep dive into the world of compilers. It taught me how strictly CPUs interpret data, how to manage memory addressing modes, and the complexities of linking C++ libraries cross-platform. It is incredibly rewarding to write a piece of assembly code in a tool I built, compile it into a ROM, and watch my own emulator boot it up successfully!
+Building this tool was a deep dive into the world of compilers. It has taught me how strict CPUs interpret data, how to manage memory addressing modes, and the complexities of linking C++ libraries cross-platform. It is incredibly rewarding to write a piece of assembly code in a tool I built, compile it into a ROM, and watch my own emulator boot it up successfully! 
